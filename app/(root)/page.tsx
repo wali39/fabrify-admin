@@ -16,8 +16,6 @@ const SetupPage = () => {
   return (
     <>
       <p>hello world</p>
-
-      
     </>
   );
 };

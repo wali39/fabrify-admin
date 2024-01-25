@@ -31,11 +31,7 @@ const formSchema = z.object({
 
 type SizeFormValues = z.infer<typeof formSchema>;
 
-export const SizeForm = ({
-  initialData,
-}: {
-  initialData: Size | null;
-}) => {
+export const SizeForm = ({ initialData }: { initialData: Size | null }) => {
   const form = useForm<SizeFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
@@ -51,11 +47,12 @@ export const SizeForm = ({
 
   const title = initialData ? "Edit size" : "Create size";
   const description = initialData ? "Edit a size" : "Add a new size";
-  const toastMessage = initialData ? "size updated." : "size created.";
+  const toastMessage = initialData ? "Size updated." : "Size created.";
   const action = initialData ? "Save changes" : "Create size";
 
   const onSubmit = async (data: SizeFormValues) => {
     try {
+      data.value = data.value.toUpperCase();
       setLoading(true);
       if (initialData) {
         await axios.patch(
@@ -128,7 +125,7 @@ export const SizeForm = ({
                   <FormControl>
                     <Input
                       disabled={loading}
-                      placeholder="Category name..."
+                      placeholder="Size name (ex:small,medium)..."
                       {...field}
                     />
                   </FormControl>
@@ -145,7 +142,7 @@ export const SizeForm = ({
                   <FormControl>
                     <Input
                       disabled={loading}
-                      placeholder="Category value..."
+                      placeholder="Size value (ex: S, M)..."
                       {...field}
                     />
                   </FormControl>

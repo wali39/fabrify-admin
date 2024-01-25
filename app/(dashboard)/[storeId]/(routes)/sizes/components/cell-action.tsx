@@ -26,7 +26,7 @@ export const CellAction = ({ data }: { data: SizeColumn }) => {
 
   const onCopy = (id: string) => {
     navigator.clipboard.writeText(id);
-    toast.success("Sizes Id copied to clipboard.");
+    toast.success("Size Id copied to clipboard.");
   };
 
   const onDelete = async () => {

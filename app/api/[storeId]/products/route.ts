@@ -38,7 +38,6 @@ export async function POST(
 
     if (!colorId) return new NextResponse("colorId required", { status: 400 });
 
-
     const storeByUserId = await prismadb.store.findFirst({
       where: {
         id: params.storeId,
@@ -95,6 +94,9 @@ export async function GET(
         colorId,
         isFeatured: isFeatured ? true : undefined,
         isArchived: false,
+      },
+      include: {
+        images: true,
       },
     });
 

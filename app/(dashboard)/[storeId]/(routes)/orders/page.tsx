@@ -1,7 +1,8 @@
 import { format } from "date-fns";
-import prismadb from "@/lib/prismadb";
 
+import prismadb from "@/lib/prismadb";
 import { formatter } from "@/lib/utils";
+
 import { OrderColumn } from "./components/columns";
 import OrderClient from "./components/client";
 
@@ -22,14 +23,14 @@ const OrdersPage = async ({ params }: { params: { storeId: string } }) => {
     },
   });
 
-  const formattedColumns: OrderColumn[] = orders.map((item) => ({
+  const formattedOrders: OrderColumn[] = orders.map((item) => ({
     id: item.id,
     phone: item.phone,
     address: item.address,
     products: item.orderItems
       .map((orderItem) => orderItem.product.name)
-      .join(","),
-    totoalPrice: formatter.format(
+      .join(", "),
+    totalPrice: formatter.format(
       item.orderItems.reduce((total, item) => {
         return total + Number(item.product.price);
       }, 0)
@@ -39,9 +40,9 @@ const OrdersPage = async ({ params }: { params: { storeId: string } }) => {
   }));
 
   return (
-    <div className="fle-col">
-      <div className="flex-1 space-y-4 p-8 pt-4">
-        <OrderClient data={formattedColumns} />
+    <div className="flex-col">
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <OrderClient data={formattedOrders} />
       </div>
     </div>
   );

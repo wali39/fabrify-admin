@@ -96,6 +96,9 @@ export async function GET(
         isArchived: false,
       },
       include: {
+        category: true,
+        size: true,
+        color: true,
         images: true,
       },
     });

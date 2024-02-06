@@ -6,9 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  // directUrl = env("DIRECT_URL")
 }
 
 model Store {
@@ -107,7 +107,7 @@ model Image{
    isPaid       Boolean  @default(false)
    phone        String   @default("")
    address      String   @default("")
-   createdAt     DateTime  @default(now())
+   createdAt    DateTime  @default(now())
    updatedAt    DateTime  @updatedAt
   }
 

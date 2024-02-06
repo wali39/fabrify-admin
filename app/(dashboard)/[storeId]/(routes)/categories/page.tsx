@@ -1,6 +1,5 @@
 import prismadb from "@/lib/prismadb";
 import CategoryClient from "./components/client";
-import { useParams } from "next/navigation";
 import { CategoryColumn } from "./components/columns";
 import { format } from "date-fns";
 

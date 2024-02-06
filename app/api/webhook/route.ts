@@ -23,7 +23,7 @@ export async function POST(req: Request) {
 
   const session = event.data.object as Stripe.Checkout.Session;
   const address = session?.customer_details?.address;
-  console.debug("webhook", address);
+
   const addressComponents = [
     address?.line1,
     address?.line2,
@@ -63,6 +63,5 @@ export async function POST(req: Request) {
       },
     });
   }
-
   return new NextResponse(null, { status: 200 });
 }

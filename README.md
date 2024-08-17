@@ -1,4 +1,5 @@
-This is a lightweight ecomerce site admin panel
+
+## Light weight ecommerce platform admin panel
 
 
 ## Getting Started

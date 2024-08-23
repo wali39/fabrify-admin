@@ -44,7 +44,7 @@ const formSchema = z.object({
   images: z.object({ url: z.string() }).array(),
   categoryId: z.string().min(1),
   sizeIds: z.string().array(),
-  colorId: z.string().min(1),
+  colorIds: z.string().array(),
   isFeatured: z.boolean().default(false).optional(),
   isArchived: z.boolean().default(false).optional(),
 });
@@ -52,7 +52,9 @@ const formSchema = z.object({
 type ProductFormValues = z.infer<typeof formSchema>;
 
 interface ProductFormProps {
-  initialData: (Product & { images: Image[] } & { sizes: Size[] }) | null;
+  initialData:
+    | (Product & { images: Image[] } & { sizes: Size[] } & { colors: Color[] })
+    | null;
   categories: Category[];
   sizes: Size[];
   colors: Color[];
@@ -74,7 +76,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           images: [],
           categoryId: "",
           sizeIds: [],
-          colorId: "",
+          colorIds: [],
           isFeatured: false,
           isArchived: false,
         },
@@ -92,7 +94,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
   const onSubmit = async (data: ProductFormValues) => {
     try {
-      console.log("product-formdata", data);
+      // console.log("product-formdata", data);
       setLoading(true);
       if (initialData) {
         await axios.patch(
@@ -311,8 +313,40 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            />{" "}
             <FormField
+              control={form.control}
+              name="colorIds"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Colors</FormLabel>
+                  <FormControl>
+                    <MultiSelect
+                      value={field.value
+                        .map((colorId) =>
+                          colors.find((colorItem) => colorItem.id === colorId)
+                        )
+                        .map((item) => ({
+                          value: item?.id!,
+                          label: item?.value!,
+                        }))}
+                      onChange={(options) => {
+                        field.onChange(options.map((option) => option.value));
+                      }}
+                      options={colors.map((size) => ({
+                        value: size.id,
+                        label: size.value,
+                      }))}
+                      placeholder="select colors"
+                      // hidePlaceholderWhenSelected
+                      emptyIndicator="Empty colors"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* <FormField
               control={form.control}
               name="colorId"
               render={({ field }) => (
@@ -343,8 +377,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                   <FormMessage />
                 </FormItem>
               )}
-            />
-
+            /> */}
             <FormField
               control={form.control}
               name="isFeatured"

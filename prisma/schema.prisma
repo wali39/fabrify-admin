@@ -68,7 +68,8 @@ model Color{
   store       Store @relation("StoreToColor",fields: [storeId],references: [id])
   name        String
   value       String
-  products    Product[] 
+  productIds  String[] @db.ObjectId
+  products    Product[] @relation(fields: [productIds],references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -86,8 +87,8 @@ model Product{
   sizeIds       String[] @db.ObjectId
   // size         Size @relation(fields: [sizeId],references:[id])
   sizes         Size[] @relation(fields: [sizeIds],references:[id])
-  colorId      String
-  color        Color @relation(fields: [colorId],references: [id])
+  colorIds      String[] @db.ObjectId
+  colors        Color[] @relation(fields: [colorIds],references: [id])
   images       Image[]
   orderItems   OrderItem[]
   createdAt    DateTime @default(now())

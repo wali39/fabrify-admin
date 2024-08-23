@@ -11,7 +11,7 @@ export type ProductColumn = {
   price: string;
   category: string;
   sizes: string[];
-  color: string;
+  colors: string[];
   isFeatured: boolean;
   isArchived: boolean;
   createdAt: string;
@@ -35,17 +35,18 @@ export const columns: ColumnDef<ProductColumn>[] = [
     header: "Sizes",
   },
   {
-    accessorKey: "color",
-    header: "Color",
-    cell: ({ row }) => (
-      <div className="flex items-center space-x-4 ">
-        {row.original.color}
-        <div
-          className="w-6 h-6 rounded-full border ml-2"
-          style={{ backgroundColor: row.original.color }}
-        ></div>
-      </div>
-    ),
+    accessorKey: "colors",
+    header: "Colors",
+    cell: ({ row }) =>
+      row.original.colors.map((color) => (
+        <div className="flex items-center space-x-1 space-y-1 ">
+          <div className="w-16">{color}</div>
+          <div
+            className="w-6 h-6 rounded-full border ml-2"
+            style={{ backgroundColor: color }}
+          ></div>
+        </div>
+      )),
   },
   {
     accessorKey: "isFeatured",

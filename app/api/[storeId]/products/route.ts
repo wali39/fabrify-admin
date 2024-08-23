@@ -15,7 +15,7 @@ export async function POST(
       images,
       categoryId,
       sizeIds,
-      colorId,
+      colorIds,
       isFeatured,
       isArchived,
     } = body;
@@ -37,7 +37,8 @@ export async function POST(
     if (!sizeIds || !sizeIds.length)
       return new NextResponse("SizeIds required", { status: 400 });
 
-    if (!colorId) return new NextResponse("colorId required", { status: 400 });
+    if (!colorIds || !colorIds.length)
+      return new NextResponse("colorIds required", { status: 400 });
 
     const storeByUserId = await prismadb.store.findFirst({
       where: {
@@ -55,7 +56,7 @@ export async function POST(
         price,
         categoryId,
         sizeIds,
-        colorId,
+        colorIds,
         storeId: params.storeId,
         isArchived,
         isFeatured,
@@ -81,61 +82,27 @@ export async function GET(
     const { searchParams } = new URL(_req.url);
     const categoryId = searchParams.get("categoryId") || undefined;
     const sizeId = searchParams.get("sizeId") || null;
-    const colorId = searchParams.get("colorId") || undefined;
+    const colorId = searchParams.get("colorId") || null;
     const isFeatured = searchParams.get("isFeatured");
 
     if (!params.storeId)
       return new NextResponse("Store Id is required", { status: 400 });
     const products = await prismadb.product.findMany({
       where: {
-        ...(sizeId!==null ? { sizeIds: { hasSome: [sizeId] } } : {}),
+        ...(sizeId !== null ? { sizeIds: { hasSome: [sizeId] } } : {}),
+        ...(colorId !== null ? { colorIds: { hasSome: [colorId] } } : {}),
         storeId: params.storeId,
         categoryId,
-        colorId,
         isFeatured: isFeatured ? true : undefined,
         isArchived: false,
       },
       include: {
         category: true,
         sizes: true,
-        color: true,
+        colors: true,
         images: true,
       },
     });
-    // let products;
-    // sizeId !== null
-    //   ? (products = await prismadb.product.findMany({
-    //       where: {
-    //         storeId: params.storeId,
-    //         categoryId,
-    //         sizeIds: { hasSome: [sizeId!] },
-    //         colorId,
-    //         isFeatured: isFeatured ? true : undefined,
-    //         isArchived: false,
-    //       },
-    //       include: {
-    //         category: true,
-    //         sizes: true,
-    //         color: true,
-    //         images: true,
-    //       },
-    //     }))
-    //   : (products = await prismadb.product.findMany({
-    //       where: {
-    //         storeId: params.storeId,
-    //         categoryId,
-    //         colorId,
-    //         isFeatured: isFeatured ? true : undefined,
-    //         isArchived: false,
-    //       },
-    //       include: {
-    //         category: true,
-    //         sizes: true,
-    //         color: true,
-    //         images: true,
-    //       },
-    //     }));
-
     return NextResponse.json(products);
   } catch (error) {
     console.log("[PRODUCTS_GET", error);

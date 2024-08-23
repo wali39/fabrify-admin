@@ -13,7 +13,8 @@ const ProductPage: React.FC<ProductPageProps> = async ({ params }) => {
       id: params.productId,
     },
     include: {
-      sizes:true,
+      colors: true,
+      sizes: true,
       images: true,
     },
   });

@@ -6,6 +6,8 @@ const BillboardPage = async ({
 }: {
   params: { categoryId: string; storeId: string };
 }) => {
+  params.categoryId === "new" &&
+    (params.categoryId = "3db21d5837ec3e1762a86b98");
   const category = await prismadb.category.findUnique({
     where: {
       id: params.categoryId,

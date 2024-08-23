@@ -6,13 +6,13 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
   // directUrl = env("DIRECT_URL")
 }
 
 model Store {
-  id          String @id @default(uuid())
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
   name        String 
   userId      String
   billboards  Billboard[]  @relation("StoreToBillboard")
@@ -27,8 +27,9 @@ model Store {
 }
 
 model Billboard{
-  id         String @id @default(uuid())
-  storeId    String
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  // id         String @id @default(uuid())
+  storeId    String 
   store      Store @relation("StoreToBillboard",fields: [storeId],references: [id])
   categories Category[]
   label      String
@@ -38,7 +39,7 @@ model Billboard{
   // @@index([storeId])
 }
 model Category{
-  id          String @id @default(uuid())
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
   storeId     String
   store       Store @relation("StoreToCategory",fields: [storeId],references: [id])
   billboardId String
@@ -50,19 +51,20 @@ model Category{
 }
 
 model Size{
-  id           String @id @default(uuid())
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
   storeId      String
   store        Store @relation("StoreToSize",fields: [storeId],references: [id])
   name         String
   value        String
-  products     Product[]
+  productIds   String[] @db.ObjectId
+  products     Product[] @relation(fields: [productIds],references: [id])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
 
 model Color{
-  id          String @id @default(uuid())
-  storeId     String
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  storeId     String 
   store       Store @relation("StoreToColor",fields: [storeId],references: [id])
   name        String
   value       String
@@ -72,17 +74,18 @@ model Color{
 }
 
 model Product{
-  id           String @id @default(uuid())
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
   storeId      String
   store        Store @relation("StoreToProduct",fields: [storeId],references: [id])
   categoryId   String
   category     Category @relation("CategoryToProduct",fields: [categoryId],references: [id])
   name         String
-  price        Decimal
+  price        Float
   isFeatured   Boolean @default(false)
   isArchived   Boolean @default(false)
-  sizeId       String
-  size         Size @relation(fields: [sizeId],references:[id])
+  sizeIds       String[] @db.ObjectId
+  // size         Size @relation(fields: [sizeId],references:[id])
+  sizes         Size[] @relation(fields: [sizeIds],references:[id])
   colorId      String
   color        Color @relation(fields: [colorId],references: [id])
   images       Image[]
@@ -92,7 +95,7 @@ model Product{
 }
 
 model Image{
-  id         String @id @default(uuid())
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
   productId  String
   product    Product @relation(fields: [productId],references: [id],onDelete: Cascade)
   url        String
@@ -100,7 +103,7 @@ model Image{
   updatedAt  DateTime @updatedAt
   }
   model Order{
-   id           String  @id @default(uuid())
+   id          String @id @default(auto()) @map("_id") @db.ObjectId
    storeId      String
    store        Store  @relation("StoreToOrder",fields: [storeId],references: [id])
    orderItems   OrderItem[]
@@ -112,7 +115,7 @@ model Image{
   }
 
   model OrderItem{
-    id           String  @id @default(uuid())
+    id          String @id @default(auto()) @map("_id") @db.ObjectId
     orderId      String
     order        Order @relation(fields: [orderId],references: [id])
     productId    String

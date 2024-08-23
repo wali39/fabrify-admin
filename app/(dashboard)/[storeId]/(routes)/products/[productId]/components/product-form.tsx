@@ -35,13 +35,15 @@ import { AlertModal } from "@/components/modals/alert-modal";
 import ImageUpload from "@/components/ui/image-upload";
 import { url } from "inspector";
 import { Checkbox } from "@/components/ui/checkbox";
+import MultiSelect from "@/components/ui/multiselect";
+import { Value } from "@radix-ui/react-select";
 
 const formSchema = z.object({
   name: z.string().min(1),
   price: z.coerce.number().min(1),
   images: z.object({ url: z.string() }).array(),
   categoryId: z.string().min(1),
-  sizeId: z.string().min(1),
+  sizeIds: z.string().array(),
   colorId: z.string().min(1),
   isFeatured: z.boolean().default(false).optional(),
   isArchived: z.boolean().default(false).optional(),
@@ -50,7 +52,7 @@ const formSchema = z.object({
 type ProductFormValues = z.infer<typeof formSchema>;
 
 interface ProductFormProps {
-  initialData: (Product & { images: Image[] }) | null;
+  initialData: (Product & { images: Image[] } & { sizes: Size[] }) | null;
   categories: Category[];
   sizes: Size[];
   colors: Color[];
@@ -71,7 +73,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           price: 0,
           images: [],
           categoryId: "",
-          sizeId: "",
+          sizeIds: [],
           colorId: "",
           isFeatured: false,
           isArchived: false,
@@ -90,7 +92,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
   const onSubmit = async (data: ProductFormValues) => {
     try {
-      console.log("product-formdata",data);
+      console.log("product-formdata", data);
       setLoading(true);
       if (initialData) {
         await axios.patch(
@@ -104,7 +106,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
       router.refresh();
       toast.success(toastMessage);
     } catch (error) {
-      console.log("[frontend_product_create",error)
+      console.log("[frontend_product_create", error);
       toast.error("Something went wrong.");
     } finally {
       setLoading(false);
@@ -119,9 +121,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
       router.refresh();
       toast.success("Product deleted.");
     } catch (error) {
-      toast.error(
-        "Something went wrong."
-      );
+      toast.error("Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -248,7 +248,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="sizeId"
               render={({ field }) => (
@@ -276,6 +276,38 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            /> */}
+            <FormField
+              control={form.control}
+              name="sizeIds"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Size</FormLabel>
+                  <FormControl>
+                    <MultiSelect
+                      value={field.value
+                        .map((sizeId) =>
+                          sizes.find((sizeItem) => sizeItem.id === sizeId)
+                        )
+                        .map((item) => ({
+                          value: item?.id!,
+                          label: item?.value!,
+                        }))}
+                      onChange={(options) => {
+                        field.onChange(options.map((option) => option.value));
+                      }}
+                      options={sizes.map((size) => ({
+                        value: size.id,
+                        label: size.value,
+                      }))}
+                      placeholder="select sizes"
+                      // hidePlaceholderWhenSelected
+                      emptyIndicator="Empty sizes"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

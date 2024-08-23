@@ -25,7 +25,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   }, []);
   const onUPload = (result: any) => {
     onChange(result.info.secure_url);
-    // console.log("on upload", result);
   };
 
   if (!isMounted) {

@@ -11,26 +11,25 @@ const ProductsPage = async ({ params }: { params: { storeId: string } }) => {
     },
     include: {
       category: true,
-      size: true,
+      sizes: true,
       color: true,
     },
     orderBy: {
       createdAt: "desc",
     },
   });
-
+  
   const formattedColumns: ProductColumn[] = products.map((item) => ({
     id: item.id,
     name: item.name,
-    price: formatter.format(item.price.toNumber()),
+    price: formatter.format(item.price),
     isFeatured: item.isFeatured,
     isArchived: item.isArchived,
     category: item.category.name,
-    size: item.size.value,
+    sizes: item.sizes.map(size=>size.value),
     color: item.color.value,
     createdAt: format(item.createdAt, "MMMM do, yyyy"),
   }));
-
   return (
     <div className="fle-col">
       <div className="flex-1 space-y-4 p-8 pt-4">

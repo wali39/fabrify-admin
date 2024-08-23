@@ -14,7 +14,7 @@ export async function POST(
       price,
       images,
       categoryId,
-      sizeId,
+      sizeIds,
       colorId,
       isFeatured,
       isArchived,
@@ -34,7 +34,8 @@ export async function POST(
     if (!categoryId)
       return new NextResponse("CatgoryId required", { status: 400 });
 
-    if (!sizeId) return new NextResponse("SizeId required", { status: 400 });
+    if (!sizeIds || !sizeIds.length)
+      return new NextResponse("SizeIds required", { status: 400 });
 
     if (!colorId) return new NextResponse("colorId required", { status: 400 });
 
@@ -53,7 +54,7 @@ export async function POST(
         name,
         price,
         categoryId,
-        sizeId,
+        sizeIds,
         colorId,
         storeId: params.storeId,
         isArchived,
@@ -79,29 +80,61 @@ export async function GET(
   try {
     const { searchParams } = new URL(_req.url);
     const categoryId = searchParams.get("categoryId") || undefined;
-    const sizeId = searchParams.get("sizeId") || undefined;
+    const sizeId = searchParams.get("sizeId") || null;
     const colorId = searchParams.get("colorId") || undefined;
     const isFeatured = searchParams.get("isFeatured");
 
     if (!params.storeId)
       return new NextResponse("Store Id is required", { status: 400 });
-
     const products = await prismadb.product.findMany({
       where: {
+        ...(sizeId!==null ? { sizeIds: { hasSome: [sizeId] } } : {}),
         storeId: params.storeId,
         categoryId,
-        sizeId,
         colorId,
         isFeatured: isFeatured ? true : undefined,
         isArchived: false,
       },
       include: {
         category: true,
-        size: true,
+        sizes: true,
         color: true,
         images: true,
       },
     });
+    // let products;
+    // sizeId !== null
+    //   ? (products = await prismadb.product.findMany({
+    //       where: {
+    //         storeId: params.storeId,
+    //         categoryId,
+    //         sizeIds: { hasSome: [sizeId!] },
+    //         colorId,
+    //         isFeatured: isFeatured ? true : undefined,
+    //         isArchived: false,
+    //       },
+    //       include: {
+    //         category: true,
+    //         sizes: true,
+    //         color: true,
+    //         images: true,
+    //       },
+    //     }))
+    //   : (products = await prismadb.product.findMany({
+    //       where: {
+    //         storeId: params.storeId,
+    //         categoryId,
+    //         colorId,
+    //         isFeatured: isFeatured ? true : undefined,
+    //         isArchived: false,
+    //       },
+    //       include: {
+    //         category: true,
+    //         sizes: true,
+    //         color: true,
+    //         images: true,
+    //       },
+    //     }));
 
     return NextResponse.json(products);
   } catch (error) {
